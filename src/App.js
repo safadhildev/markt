@@ -3,6 +3,8 @@ import "./App.css";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import Home from "./components/Home";
 import Login from "./components/Login";
+import firebase from "./firebase";
+import Navbar from "./components/common/Navbar";
 
 const App = () => {
   return (

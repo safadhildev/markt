@@ -1,0 +1,94 @@
+.slider-container{
+     width:59%;
+     margin:20px 0px;
+
+}
+
+.slider-img-wrapper{
+    width: 100%;
+    height: 250px;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.slider-img{
+    width:100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.slider-nav-wrapper{
+    position: absolute;
+    top:0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    
+}
+
+.slider-nav{
+    width: 100px;
+    height: 100%;
+    background-color: #000;
+}
+
+
+.post-container{
+    width:60%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.post-wrapper{
+    background-color: #fff;
+    margin:20px 8px;
+    width:200px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 5px;
+    overflow: hidden;
+
+}
+
+
+.post-image-wrapper{
+    width:100%;
+    height:150px;
+}
+
+.post-image-wrapper img{
+    width: 100%;
+    height:100%;
+    object-fit: cover;
+}
+
+.post-content-wrapper{
+    display: flex;
+    padding:10px;
+    flex-direction: column;
+    flex-wrap: wrap;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.post-content-wrapper p{
+    margin:0;  
+}
+
+.post-name {
+    width:150px;
+    display: block;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+}
