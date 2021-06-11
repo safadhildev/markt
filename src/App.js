@@ -14,6 +14,7 @@ import Navbar from "./components/common/Navbar";
 import Profile from "./components/Profile";
 import "./App.css";
 import "firebase/auth";
+import Register from "./components/Register";
 
 const PrivateRoute = ({ component: Component, authenticated, path, exact }) => {
   return (
@@ -54,6 +55,9 @@ const App = () => {
       <Switch>
         <Route exact path="/">
           {authentication.authenticated ? <Redirect to="/home" /> : <Login />}
+        </Route>
+        <Route exact path="/Register">
+          <Register />
         </Route>
         <Route exact path="/home">
           {authentication.authenticated ? <Home /> : <Redirect to="/" />}

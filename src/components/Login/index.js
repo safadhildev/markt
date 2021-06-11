@@ -3,14 +3,14 @@ import {
   CircularProgress,
   Grid,
   makeStyles,
-  Snackbar,
   TextField,
 } from "@material-ui/core";
 import React, { useState } from "react";
 import { useHistory } from "react-router";
 import "./index.css";
-import MuiAlert from "@material-ui/lab/Alert";
+
 import firebase from "firebase/app";
+import MySnackbar from "../common/MySnackbar";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -21,16 +21,17 @@ const useStyles = makeStyles((theme) => ({
     margin: "20px 0",
   },
   button: {
-    margin: "50px 0",
+    margin: "50px 0 0 0",
     padding: "10px 0",
     fontSize: "18px",
     fontWeight: "bold",
   },
+  registerButton: {
+    margin: "10px 0",
+    fontSize: "16px",
+    fontWeight: "500",
+  },
 }));
-
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
 
 const Login = () => {
   const classes = useStyles();
@@ -39,6 +40,8 @@ const Login = () => {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [severity, setSeverity] = useState("success");
+  const [message, setMessage] = useState("");
 
   const onLogin = async () => {
     setLoading(true);
@@ -46,20 +49,23 @@ const Login = () => {
       const userCredential = await firebase
         .auth()
         .signInWithEmailAndPassword(email, password);
-
-      console.log(userCredential.user);
-
       if (userCredential) {
         setLoading(false);
+        setSeverity("success");
+        setMessage("Login Successful!");
         setOpen(true);
         setTimeout(() => {
           history.push("/home");
-        }, 500);
+        }, 1000);
       }
     } catch (error) {
       setLoading(false);
       console.log("Login - onLogin :: ", error);
     }
+  };
+
+  const onRegister = () => {
+    history.push("/register");
   };
 
   const onChangeEmail = (event) => {
@@ -116,19 +122,21 @@ const Login = () => {
         >
           Login
         </Button>
-        <Snackbar
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "center",
-          }}
+        <Button
+          color="primary"
+          onClick={() => onRegister()}
+          className={classes.registerButton}
+        >
+          Register
+        </Button>
+        <MySnackbar
+          severity={severity}
+          message={message}
           open={open}
-          autoHideDuration={1000}
           onClose={() => {
             setOpen(false);
           }}
-        >
-          <Alert severity="success">This is a success message!</Alert>
-        </Snackbar>
+        />
       </Grid>
     </Grid>
   );

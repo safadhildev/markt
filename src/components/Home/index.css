@@ -71,16 +71,26 @@
 
 .post-content-wrapper{
     display: flex;
+    flex-direction: row;
     padding:10px;
-    flex-direction: column;
-    flex-wrap: wrap;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+    justify-content: center;
 }
 
 .post-content-wrapper p{
     margin:0;  
+}
+
+.post-content-details{
+    flex:3;
+    flex-wrap: wrap;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+}
+.post-content-fav {
+    align-items: flex-end;
+    
 }
 
 .post-name {

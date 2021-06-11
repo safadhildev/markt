@@ -18,7 +18,7 @@ import {
 import Navbar from "../common/Navbar";
 import SwipeableViews from "react-swipeable-views";
 import { autoPlay } from "react-swipeable-views-utils";
-import { Search } from "@material-ui/icons";
+import { FavoriteBorder, FavoriteOutlined, Search } from "@material-ui/icons";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -63,6 +63,10 @@ const useStyle = makeStyles((theme) => ({
   },
   stepper: { maxWidth: 400 },
   searchButton: { width: "auto", backgroundColor: "#FFF", padding: "0px 10px" },
+  iconButton: {
+    padding: 0,
+    alignItems: "flex-end",
+  },
 }));
 
 const Home = () => {
@@ -111,6 +115,10 @@ const Home = () => {
     getData();
   }, []);
 
+  const onFavorite = (item) => {
+    console.log({ item });
+  };
+
   const onSearch = () => {
     setLoading(true);
     const searchResults = data.filter((item) => item.name.includes(searchText));
@@ -144,8 +152,20 @@ const Home = () => {
           <img src={item.url} />
         </div>
         <div className="post-content-wrapper">
-          <p className="post-name">{item.name}</p>
-          {item.price && <p>RM {item.price}</p>}
+          <div className="post-content-details">
+            <p className="post-name">{item.name}</p>
+            {item.price && <p>RM {item.price}</p>}
+          </div>
+          <div className="post-content-fav">
+            <IconButton
+              className={classes.iconButton}
+              onClick={() => {
+                onFavorite(item);
+              }}
+            >
+              <FavoriteBorder />
+            </IconButton>
+          </div>
         </div>
       </div>
     );
