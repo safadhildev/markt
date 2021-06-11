@@ -11,5 +11,5 @@
 2.  Start Live Server
     `npm start`
 3.  Deploy to Firebase Hosting
-    - `npm build`
+    - `npm run build`
     - `firebase deploy`
