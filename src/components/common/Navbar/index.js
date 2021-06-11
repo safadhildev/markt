@@ -14,11 +14,20 @@ import {
   Toolbar,
   Typography,
 } from "@material-ui/core";
-import { Home, Inbox, Mail, Menu, Search } from "@material-ui/icons";
+import {
+  AccountCircle,
+  ExitToApp,
+  Home,
+  Inbox,
+  Mail,
+  Menu,
+  Search,
+} from "@material-ui/icons";
 import React from "react";
 import { useState } from "react";
 import { useHistory } from "react-router";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
+import firebase from "firebase/app";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -74,9 +83,14 @@ const Navbar = ({ search, onSearch, onChangeText, searchText }) => {
     history.push(`/${type}`);
   };
 
-  const onLogout = () => {
+  const onLogout = async () => {
     setShowDrawer(false);
-    history.push("/");
+    try {
+      await firebase.auth().signOut();
+      history.push("/");
+    } catch (error) {
+      console.log("onLogout :: ", error);
+    }
   };
 
   return (
@@ -176,10 +190,21 @@ const Navbar = ({ search, onSearch, onChangeText, searchText }) => {
             </ListItemIcon>
             <ListItemText primary="Home" />
           </ListItem>
+          <ListItem
+            button
+            key={"profile"}
+            onClick={() => handleClick("profile")}
+          >
+            <ListItemIcon>
+              <AccountCircle />
+            </ListItemIcon>
+            <ListItemText primary="Profile" />
+          </ListItem>
+          <ListItem />
           <Divider />
           <ListItem button key={"logout"} onClick={() => onLogout()}>
             <ListItemIcon>
-              <Home />
+              <ExitToApp />
             </ListItemIcon>
             <ListItemText primary="Logout" />
           </ListItem>
