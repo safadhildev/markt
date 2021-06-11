@@ -15,6 +15,7 @@ import Profile from "./components/Profile";
 import "./App.css";
 import "firebase/auth";
 import Register from "./components/Register";
+import Likes from "./components/Likes";
 
 const PrivateRoute = ({ component: Component, authenticated, path, exact }) => {
   return (
@@ -64,6 +65,9 @@ const App = () => {
         </Route>
         <Route exact path="/profile">
           {authentication.authenticated ? <Profile /> : <Redirect to="/" />}
+        </Route>
+        <Route exact path="/likes">
+          {authentication.authenticated ? <Likes /> : <Redirect to="/" />}
         </Route>
       </Switch>
     </Router>

@@ -17,6 +17,7 @@ import {
 import {
   AccountCircle,
   ExitToApp,
+  Favorite,
   Home,
   Inbox,
   Mail,
@@ -67,7 +68,7 @@ const Navbar = ({ search, onSearch, onChangeText, searchText }) => {
   const classes = useStyle();
   const history = useHistory();
   const [showDrawer, setShowDrawer] = useState(false);
-  const mobile = useMediaQuery("(max-width:700px)");
+  const mobile = useMediaQuery("(max-width:800px)");
 
   const onNavigate = (type) => {
     setShowDrawer(false);
@@ -134,7 +135,7 @@ const Navbar = ({ search, onSearch, onChangeText, searchText }) => {
                   Profile
                 </Link>
                 <Link
-                  onClick={() => onNavigate("saved")}
+                  onClick={() => onNavigate("likes")}
                   color="#FFF"
                   className={classes.link}
                 >
@@ -200,7 +201,13 @@ const Navbar = ({ search, onSearch, onChangeText, searchText }) => {
             </ListItemIcon>
             <ListItemText primary="Profile" />
           </ListItem>
-          <ListItem />
+          <ListItem button key={"likes"} onClick={() => handleClick("likes")}>
+            <ListItemIcon>
+              <Favorite />
+            </ListItemIcon>
+            <ListItemText primary="Likes" />
+          </ListItem>
+
           <Divider />
           <ListItem button key={"logout"} onClick={() => onLogout()}>
             <ListItemIcon>

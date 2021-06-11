@@ -18,7 +18,12 @@ import {
 import Navbar from "../common/Navbar";
 import SwipeableViews from "react-swipeable-views";
 import { autoPlay } from "react-swipeable-views-utils";
-import { FavoriteBorder, FavoriteOutlined, Search } from "@material-ui/icons";
+import {
+  Favorite,
+  FavoriteBorder,
+  FavoriteOutlined,
+  Search,
+} from "@material-ui/icons";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -70,14 +75,32 @@ const useStyle = makeStyles((theme) => ({
 }));
 
 const Home = () => {
+  const user = firebase.auth().currentUser;
   const classes = useStyle();
   const db = firebase.firestore();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
+  const [userData, setUserData] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
   const [searchText, setSearchText] = useState(null);
 
   const mobile = useMediaQuery("(max-width:700px)");
+
+  const getUserData = async () => {
+    try {
+      const doc = await db.collection("users").doc(user.uid).get();
+      if (doc.exists) {
+        setUserData({
+          id: user.uid,
+          ...doc.data(),
+        });
+      }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log("Home - getData :: ", error);
+    }
+  };
 
   const getData = async () => {
     try {
@@ -112,11 +135,47 @@ const Home = () => {
 
   useEffect(() => {
     setLoading(true);
+    // getUserData();
     getData();
   }, []);
 
-  const onFavorite = (item) => {
-    console.log({ item });
+  const onReadUserData = (doc) => {
+    console.log({ doc });
+    if (doc.exists) {
+      setUserData({
+        id: user.uid,
+        ...doc.data(),
+      });
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = db
+      .collection("users")
+      .doc(user.uid)
+      .onSnapshot(onReadUserData);
+    return unsubscribe;
+  }, []);
+
+  const onFavorite = async (item) => {
+    try {
+      const user = firebase.auth().currentUser;
+      const isLikedByUser = userData?.likes?.find((like) => like === item.id);
+      let newArray = userData.likes;
+
+      if (isLikedByUser) {
+        // remove
+        newArray = userData?.likes?.filter((like) => like !== item.id);
+      } else {
+        // add
+        newArray.push(item.id);
+      }
+      await db.collection("users").doc(user.uid).update({
+        likes: newArray,
+      });
+    } catch (error) {
+      console.log("onFavorite :: ", error);
+    }
   };
 
   const onSearch = () => {
@@ -146,6 +205,8 @@ const Home = () => {
   };
 
   const renderItem = (item) => {
+    const isLikedByUser = userData?.likes?.find((like) => like === item.id);
+
     return (
       <div className="post-wrapper">
         <div className="post-image-wrapper">
@@ -163,7 +224,7 @@ const Home = () => {
                 onFavorite(item);
               }}
             >
-              <FavoriteBorder />
+              {isLikedByUser ? <Favorite /> : <FavoriteBorder />}
             </IconButton>
           </div>
         </div>
@@ -204,7 +265,12 @@ const Home = () => {
             />
           </Grid>
         )}
-        <div className="slider-container">
+        <Grid
+          container
+          xs={mobile ? 10 : 7}
+          justify="flex-start"
+          alignItems="space-evenly"
+        >
           <AutoPlaySwipeableViews
             axis={"x"}
             index={activeStep}
@@ -223,7 +289,7 @@ const Home = () => {
               </div>
             ))}
           </AutoPlaySwipeableViews>
-        </div>
+        </Grid>
         <MobileStepper
           variant="dots"
           steps={tutorialSteps.length}
@@ -231,9 +297,17 @@ const Home = () => {
           activeStep={activeStep}
           className={classes.stepper}
         />
-        <div className="post-container">
+        {/* <div className="post-container">
           {data.length > 0 && data.map(renderItem)}
-        </div>
+        </div> */}
+        <Grid
+          container
+          xs={mobile ? 10 : 7}
+          justify="flex-start"
+          alignItems="space-evenly"
+        >
+          {data.length > 0 && data.map(renderItem)}
+        </Grid>
       </Grid>
     );
   };

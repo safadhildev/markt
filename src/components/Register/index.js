@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import { Button, Grid, makeStyles, TextField } from "@material-ui/core";
+import { useHistory } from "react-router";
 
 const useStyle = makeStyles((theme) => ({
   container: {
@@ -15,11 +16,15 @@ const useStyle = makeStyles((theme) => ({
 
 const Register = () => {
   const classes = useStyle();
+  const history = useHistory();
   const db = firebase.firestore().collection("users");
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onRegister = async () => {
+    setLoading(true);
     try {
       const userCredential = await firebase
         .auth()
@@ -30,10 +35,17 @@ const Register = () => {
           email: userCredential.user.email,
           displayName: userCredential.user.displayName,
           image: userCredential.user.photoURL,
+          likes: [],
         };
         await db.doc(userCredential.user.uid).set(userData);
+        setLoading(false);
+        setOpen(true);
+        setTimeout(() => {
+          history.push("/");
+        }, 1000);
       }
     } catch (error) {
+      setLoading(false);
       console.log("onRegister :: ", error);
       if (error.code === "auth/email-already-in-use") {
         alert("The email address is already in use by another account.");
@@ -103,8 +115,9 @@ const Register = () => {
             color="primary"
             className={classes.input}
             size="large"
+            disabled={loading}
           >
-            Register
+            {loading ? "Registering..." : "Register"}
           </Button>
         </Grid>
       </Grid>
