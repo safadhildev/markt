@@ -16,60 +16,66 @@ import "./App.css";
 import "firebase/auth";
 import Register from "./components/Register";
 import Likes from "./components/Likes";
-
-const PrivateRoute = ({ component: Component, authenticated, path, exact }) => {
-  return (
-    <Route
-      path={path}
-      exact={exact}
-      render={(props) =>
-        authenticated ? <Component {...props} /> : <Redirect to="/login" />
-      }
-    />
-  );
-};
+import MySnackbar from "./components/common/MySnackbar";
 
 const App = () => {
-  const [authentication, setAuthState] = useState({
-    authenticated: false,
-  });
+  const [isAuth, setIsAuth] = useState(false);
+  const [severity, setSeverity] = useState("success");
+  const [message, setMessage] = useState("");
+  const [open, setOpen] = useState(false);
 
   useEffect(
     () =>
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
           console.log({ user });
-          setAuthState({
-            authenticated: true,
-          });
+          setIsAuth(true);
         } else {
-          setAuthState({
-            authenticated: false,
-          });
+          setIsAuth(false);
         }
       }),
-    [setAuthState]
+    [setIsAuth]
   );
 
   return (
     <Router>
       <Switch>
         <Route exact path="/">
-          {authentication.authenticated ? <Redirect to="/home" /> : <Login />}
+          {isAuth ? (
+            <Redirect to="/home" />
+          ) : (
+            <Login
+              setOpen={setOpen}
+              severity={setSeverity}
+              message={setMessage}
+            />
+          )}
         </Route>
         <Route exact path="/Register">
-          <Register />
+          <Register
+            setOpen={setOpen}
+            severity={setSeverity}
+            message={setMessage}
+          />
         </Route>
         <Route exact path="/home">
-          {authentication.authenticated ? <Home /> : <Redirect to="/" />}
+          {isAuth ? <Home /> : <Redirect to="/" />}
         </Route>
         <Route exact path="/profile">
-          {authentication.authenticated ? <Profile /> : <Redirect to="/" />}
+          {isAuth ? <Profile /> : <Redirect to="/" />}
         </Route>
         <Route exact path="/likes">
-          {authentication.authenticated ? <Likes /> : <Redirect to="/" />}
+          {isAuth ? <Likes /> : <Redirect to="/" />}
         </Route>
       </Switch>
+      <MySnackbar
+        severity={severity}
+        message={message}
+        open={open}
+        onClose={() => {
+          setOpen(false);
+        }}
+      />
     </Router>
   );
 };

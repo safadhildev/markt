@@ -189,21 +189,6 @@ const Likes = () => {
     );
   };
 
-  const renderLoading = () => {
-    return (
-      <Grid
-        container
-        xs={12}
-        direction="column"
-        alignItems="center"
-        // justify="center"
-        style={{ minHeight: "100vh" }}
-      >
-        <CircularProgress />
-      </Grid>
-    );
-  };
-
   return (
     <Grid
       container
@@ -214,7 +199,7 @@ const Likes = () => {
       alignItems="center"
     >
       <Navbar />
-      {loading ? renderLoading() : renderData()}
+      {renderData()}
     </Grid>
   );
 };

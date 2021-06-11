@@ -24,24 +24,19 @@ const useStyles = makeStyles((theme) => ({
     margin: "50px 0 0 0",
     padding: "10px 0",
     fontSize: "18px",
-    fontWeight: "bold",
   },
   registerButton: {
     margin: "10px 0",
     fontSize: "16px",
-    fontWeight: "500",
   },
 }));
 
-const Login = () => {
+const Login = ({ message, severity, setOpen }) => {
   const classes = useStyles();
   const history = useHistory();
-  const [open, setOpen] = useState(false);
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [severity, setSeverity] = useState("success");
-  const [message, setMessage] = useState("");
 
   const onLogin = async () => {
     setLoading(true);
@@ -51,14 +46,17 @@ const Login = () => {
         .signInWithEmailAndPassword(email, password);
       if (userCredential) {
         setLoading(false);
-        setSeverity("success");
-        setMessage("Login Successful!");
+        severity("success");
+        message("Login Successful!");
         setOpen(true);
         setTimeout(() => {
           history.push("/home");
         }, 1000);
       }
     } catch (error) {
+      severity("error");
+      message(`Error: ${error.message}`);
+      setOpen(true);
       setLoading(false);
       console.log("Login - onLogin :: ", error);
     }
@@ -113,14 +111,14 @@ const Login = () => {
           color="primary"
           onClick={() => onLogin()}
           className={classes.button}
-          disabled={!email || !password}
+          disabled={!email || !password || loading}
           endIcon={
             loading && (
               <CircularProgress style={{ color: "#FFF" }} size="smaill" />
             )
           }
         >
-          Login
+          {loading ? "Logging in..." : "Login"}
         </Button>
         <Button
           color="primary"
@@ -129,14 +127,6 @@ const Login = () => {
         >
           Register
         </Button>
-        <MySnackbar
-          severity={severity}
-          message={message}
-          open={open}
-          onClose={() => {
-            setOpen(false);
-          }}
-        />
       </Grid>
     </Grid>
   );

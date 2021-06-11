@@ -13,6 +13,7 @@ import {
   makeStyles,
   MobileStepper,
   TextField,
+  Typography,
   useMediaQuery,
 } from "@material-ui/core";
 import Navbar from "../common/Navbar";
@@ -72,6 +73,9 @@ const useStyle = makeStyles((theme) => ({
     padding: 0,
     alignItems: "flex-end",
   },
+  loggedText: {
+    fontSize: "12px",
+  },
 }));
 
 const Home = () => {
@@ -85,22 +89,6 @@ const Home = () => {
   const [searchText, setSearchText] = useState(null);
 
   const mobile = useMediaQuery("(max-width:700px)");
-
-  const getUserData = async () => {
-    try {
-      const doc = await db.collection("users").doc(user.uid).get();
-      if (doc.exists) {
-        setUserData({
-          id: user.uid,
-          ...doc.data(),
-        });
-      }
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      console.log("Home - getData :: ", error);
-    }
-  };
 
   const getData = async () => {
     try {
@@ -265,6 +253,17 @@ const Home = () => {
             />
           </Grid>
         )}
+        <Grid
+          container
+          xs={mobile ? 10 : 7}
+          justify="flex-start"
+          alignItems="space-evenly"
+          style={{ margin: "0 0 30px 0" }}
+        >
+          <Typography className={classes.loggedText}>
+            Logged In as : {user.email}
+          </Typography>
+        </Grid>
         <Grid
           container
           xs={mobile ? 10 : 7}

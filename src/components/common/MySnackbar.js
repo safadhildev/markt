@@ -14,7 +14,7 @@ const MySnackbar = ({ onClose, open, severity, message }) => {
         horizontal: "center",
       }}
       open={open}
-      autoHideDuration={1000}
+      autoHideDuration={2000}
       onClose={onClose}
     >
       <Alert severity={severity}>{message}</Alert>

@@ -3,6 +3,7 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 import { Button, Grid, makeStyles, TextField } from "@material-ui/core";
 import { useHistory } from "react-router";
+import MySnackbar from "../common/MySnackbar";
 
 const useStyle = makeStyles((theme) => ({
   container: {
@@ -14,14 +15,17 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const Register = () => {
+const Register = ({ severity, setOpen, message }) => {
   const classes = useStyle();
   const history = useHistory();
   const db = firebase.firestore().collection("users");
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
-  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const onLogin = () => {
+    history.push("/");
+  };
 
   const onRegister = async () => {
     setLoading(true);
@@ -39,19 +43,18 @@ const Register = () => {
         };
         await db.doc(userCredential.user.uid).set(userData);
         setLoading(false);
+        severity("success");
+        message("Registration Successful!");
         setOpen(true);
-        setTimeout(() => {
-          history.push("/");
-        }, 1000);
+        await firebase.auth().signOut();
+        history.push("/");
       }
     } catch (error) {
+      severity("error");
+      message(`Error: ${error.message}`);
+      setOpen(true);
       setLoading(false);
       console.log("onRegister :: ", error);
-      if (error.code === "auth/email-already-in-use") {
-        alert("The email address is already in use by another account.");
-      } else {
-        alert(error.message);
-      }
     }
   };
 
@@ -118,6 +121,11 @@ const Register = () => {
             disabled={loading}
           >
             {loading ? "Registering..." : "Register"}
+          </Button>
+        </Grid>
+        <Grid item xs={12}>
+          <Button fullWidth color="primary" onClick={() => onLogin()}>
+            Login
           </Button>
         </Grid>
       </Grid>
