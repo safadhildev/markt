@@ -5,14 +5,20 @@ import "./index.css";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import {
+  Button,
   CircularProgress,
   Grid,
+  IconButton,
+  InputAdornment,
   makeStyles,
   MobileStepper,
+  TextField,
+  useMediaQuery,
 } from "@material-ui/core";
 import Navbar from "../common/Navbar";
 import SwipeableViews from "react-swipeable-views";
 import { autoPlay } from "react-swipeable-views-utils";
+import { Search } from "@material-ui/icons";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -56,6 +62,7 @@ const useStyle = makeStyles((theme) => ({
     width: "100%",
   },
   stepper: { maxWidth: 400 },
+  searchButton: { width: "auto", backgroundColor: "#FFF", padding: "0px 10px" },
 }));
 
 const Home = () => {
@@ -64,7 +71,9 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
-  const maxSteps = tutorialSteps.length;
+  const [searchText, setSearchText] = useState(null);
+
+  const mobile = useMediaQuery("(max-width:700px)");
 
   const getData = async () => {
     try {
@@ -101,6 +110,17 @@ const Home = () => {
     setLoading(true);
     getData();
   }, []);
+
+  const onSearch = () => {
+    setLoading(true);
+    const searchResults = data.filter((item) => item.name.includes(searchText));
+    setData(searchResults);
+    setLoading(false);
+  };
+
+  const onChangeText = (event) => {
+    setSearchText(event.target.value);
+  };
 
   const renderLoading = () => {
     return (
@@ -140,6 +160,30 @@ const Home = () => {
         alignItems="center"
         justify="center"
       >
+        {mobile && (
+          <Grid xs={12}>
+            <TextField
+              id="search-input"
+              placeholder="Search..."
+              variant="outlined"
+              size="small"
+              onChange={onChangeText}
+              value={searchText}
+              InputProps={{
+                className: classes.search,
+                endAdornment: (
+                  <IconButton
+                    color="primary"
+                    component="span"
+                    onClick={() => onSearch()}
+                  >
+                    <Search />
+                  </IconButton>
+                ),
+              }}
+            />
+          </Grid>
+        )}
         <div className="slider-container">
           <AutoPlaySwipeableViews
             axis={"x"}
@@ -183,7 +227,14 @@ const Home = () => {
       justify="center"
       alignItems="center"
     >
-      <Navbar />
+      <Navbar
+        search
+        onSearch={() => {
+          onSearch();
+        }}
+        onChangeText={onChangeText}
+        searchText={searchText}
+      />
       {loading ? renderLoading() : renderData()}
     </Grid>
   );
