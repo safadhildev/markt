@@ -85,3 +85,46 @@
     font-size: 12px;
     font-weight: bold;
 }
+
+
+/* DETAILS */
+.details-image-wrapper{
+    width: 100%;
+    height: 400px;
+    background-color: rgba(0,0,0,0.9);
+}
+
+.details-image{
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.details-name{
+    margin:0;
+    font-size: 18px;
+    font-weight: bold;
+    color: #2196F3;
+
+}
+
+.details-price{
+      margin:0;
+      font-size: 18px;
+      font-weight: bold;
+    color: #FF9800;
+}
+
+.details-brand,
+.details-condition,
+.details-description-label,
+.details-description {
+     margin:0;
+     font-size: 14px;
+    color: #9E9E9E;
+}
+
+
+.details-description{
+    margin: 10px 0;
+}

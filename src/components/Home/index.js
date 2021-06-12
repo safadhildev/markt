@@ -88,6 +88,7 @@ const Home = () => {
   const [userData, setUserData] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
   const [searchText, setSearchText] = useState(null);
+  const [selected, setSelected] = useState(null);
 
   const mobile = useMediaQuery("(max-width:400px)");
   const tablet = useMediaQuery("(max-width:700px)");
@@ -147,6 +148,10 @@ const Home = () => {
     return unsubscribe;
   }, []);
 
+  const onSelectItem = (item) => {
+    setSelected(item);
+  };
+
   const onFavorite = async (item) => {
     try {
       const user = firebase.auth().currentUser;
@@ -204,6 +209,9 @@ const Home = () => {
         onFavorite={() => {
           onFavorite(item);
         }}
+        // onClick={() => {
+        //   onSelectItem(item);
+        // }}
       />
     );
   };

@@ -182,7 +182,6 @@ const Navbar = ({ search, onSearch, onChangeText, searchText }) => {
           onCloseDrawer();
         }}
         className={classes.drawer}
-        style={{ width: 200 }}
       >
         <div style={{ width: 300 }}>
           <ListItem button key={"home"} onClick={() => handleClick("home")}>
