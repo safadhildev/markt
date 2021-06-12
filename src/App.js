@@ -66,7 +66,15 @@ const App = () => {
           {isAuth ? <Home /> : <Redirect to="/" />}
         </Route>
         <Route exact path="/profile">
-          {isAuth ? <Profile /> : <Redirect to="/" />}
+          {isAuth ? (
+            <Profile
+              setOpen={setOpen}
+              severity={setSeverity}
+              message={setMessage}
+            />
+          ) : (
+            <Redirect to="/" />
+          )}
         </Route>
         <Route exact path="/likes">
           {isAuth ? <Likes /> : <Redirect to="/" />}

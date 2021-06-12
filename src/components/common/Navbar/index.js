@@ -119,7 +119,7 @@ const Navbar = ({ search, onSearch, onChangeText, searchText }) => {
 
           {!mobile && (
             <>
-              <Grid item xs={7} className={classes.linkWrapper}>
+              <Grid item xs={search ? 7 : 9} className={classes.linkWrapper}>
                 <Link
                   onClick={() => onNavigate("home")}
                   color="#FFF"
@@ -140,6 +140,13 @@ const Navbar = ({ search, onSearch, onChangeText, searchText }) => {
                   className={classes.link}
                 >
                   Favorites
+                </Link>
+                <Link
+                  onClick={() => onNavigate("sell")}
+                  color="#FFF"
+                  className={classes.link}
+                >
+                  Sell
                 </Link>
               </Grid>
               {search && (
@@ -205,6 +212,13 @@ const Navbar = ({ search, onSearch, onChangeText, searchText }) => {
               <Favorite />
             </ListItemIcon>
             <ListItemText primary="Likes" />
+          </ListItem>
+
+          <ListItem button key={"sell"} onClick={() => handleClick("sell")}>
+            <ListItemIcon>
+              <Favorite />
+            </ListItemIcon>
+            <ListItemText primary="Sell" />
           </ListItem>
 
           <Divider />
