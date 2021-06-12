@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import Navbar from "../common/Navbar";
 import { Favorite, FavoriteBorder, Search } from "@material-ui/icons";
+import PostItem from "../common/PostItem";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -119,27 +120,13 @@ const Likes = () => {
     const isLikedByUser = userData?.likes?.find((like) => like === item.id);
 
     return (
-      <div className="post-wrapper">
-        <div className="post-image-wrapper">
-          <img src={item.url} />
-        </div>
-        <div className="post-content-wrapper">
-          <div className="post-content-details">
-            <p className="post-name">{item.name}</p>
-            {item.price && <p>RM {item.price}</p>}
-          </div>
-          <div className="post-content-fav">
-            <IconButton
-              className={classes.iconButton}
-              onClick={() => {
-                onFavorite(item);
-              }}
-            >
-              {isLikedByUser ? <Favorite /> : <FavoriteBorder />}
-            </IconButton>
-          </div>
-        </div>
-      </div>
+      <PostItem
+        liked={isLikedByUser}
+        data={item}
+        onFavorite={() => {
+          onFavorite(item);
+        }}
+      />
     );
   };
 

@@ -25,6 +25,7 @@ import {
   FavoriteOutlined,
   Search,
 } from "@material-ui/icons";
+import PostItem from "../common/PostItem";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -88,7 +89,8 @@ const Home = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [searchText, setSearchText] = useState(null);
 
-  const mobile = useMediaQuery("(max-width:700px)");
+  const mobile = useMediaQuery("(max-width:400px)");
+  const tablet = useMediaQuery("(max-width:700px)");
 
   const getData = async () => {
     try {
@@ -196,27 +198,13 @@ const Home = () => {
     const isLikedByUser = userData?.likes?.find((like) => like === item.id);
 
     return (
-      <div className="post-wrapper">
-        <div className="post-image-wrapper">
-          <img src={item.url} />
-        </div>
-        <div className="post-content-wrapper">
-          <div className="post-content-details">
-            <p className="post-name">{item.name}</p>
-            {item.price && <p>RM {item.price}</p>}
-          </div>
-          <div className="post-content-fav">
-            <IconButton
-              className={classes.iconButton}
-              onClick={() => {
-                onFavorite(item);
-              }}
-            >
-              {isLikedByUser ? <Favorite /> : <FavoriteBorder />}
-            </IconButton>
-          </div>
-        </div>
-      </div>
+      <PostItem
+        liked={isLikedByUser}
+        data={item}
+        onFavorite={() => {
+          onFavorite(item);
+        }}
+      />
     );
   };
 
@@ -229,10 +217,27 @@ const Home = () => {
         alignItems="center"
         justify="center"
       >
+        <Grid
+          container
+          xs={mobile ? 10 : 7}
+          justify="flex-start"
+          alignItems="space-evenly"
+          style={{ margin: "10px 0 30px 0" }}
+        >
+          <Typography className={classes.loggedText}>
+            Logged In as : {user.email}
+          </Typography>
+        </Grid>
         {mobile && (
-          <Grid xs={12}>
+          <Grid
+            xs={12}
+            style={{
+              margin: "0 0 20px 0",
+              width: "80%",
+            }}
+          >
             <TextField
-              id="search-input"
+              fullWidth
               placeholder="Search..."
               variant="outlined"
               size="small"
@@ -253,20 +258,12 @@ const Home = () => {
             />
           </Grid>
         )}
+
         <Grid
           container
-          xs={mobile ? 10 : 7}
-          justify="flex-start"
-          alignItems="space-evenly"
-          style={{ margin: "0 0 30px 0" }}
-        >
-          <Typography className={classes.loggedText}>
-            Logged In as : {user.email}
-          </Typography>
-        </Grid>
-        <Grid
-          container
-          xs={mobile ? 10 : 7}
+          xs={11}
+          sm={8}
+          lg={7}
           justify="flex-start"
           alignItems="space-evenly"
         >
@@ -301,7 +298,9 @@ const Home = () => {
         </div> */}
         <Grid
           container
-          xs={mobile ? 10 : 7}
+          xs={11}
+          sm={8}
+          lg={7}
           justify="flex-start"
           alignItems="space-evenly"
         >
