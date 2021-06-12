@@ -1,7 +1,22 @@
-import { Drawer, Grid, IconButton, makeStyles } from "@material-ui/core";
-import { Favorite, FavoriteBorder } from "@material-ui/icons";
+import {
+  Drawer,
+  Grid,
+  IconButton,
+  makeStyles,
+  SwipeableDrawer,
+  useMediaQuery,
+} from "@material-ui/core";
+import { Close, Favorite, FavoriteBorder } from "@material-ui/icons";
 import React, { useState } from "react";
 import "./index.css";
+
+const styles = {
+  mobileDrawer: {
+    width: "100%",
+    // height: "500px",
+    // marginTop: "100px",
+  },
+};
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -21,6 +36,11 @@ const useStyle = makeStyles((theme) => ({
     alignItems: "flex-end",
     color: "#f44336",
   },
+  iconCloseButton: {
+    padding: 0,
+    alignItems: "flex-end",
+    color: "#EEEEEE",
+  },
   loggedText: {
     fontSize: "12px",
   },
@@ -28,14 +48,23 @@ const useStyle = makeStyles((theme) => ({
   detailsText: {
     margin: "10px 0 0 0",
   },
+  drawer: {
+    paddingTop: "100px",
+    overflow: "scroll",
+  },
 }));
 
 const PostItem = ({ data, onFavorite, liked }) => {
   const classes = useStyle();
   const [selected, setSelected] = useState(null);
+  const mobile = useMediaQuery("(max-width:500px)");
 
   const onSelectItem = () => {
     setSelected(data);
+  };
+
+  const onCloseDrawer = () => {
+    setSelected(null);
   };
 
   return (
@@ -87,17 +116,33 @@ const PostItem = ({ data, onFavorite, liked }) => {
       </div>
       {selected && (
         <Drawer
-          anchor="right"
+          swipeAreaWidth={20}
+          disableSwipeToOpen
+          anchor={mobile ? "bottom" : "right"}
           open={selected}
           onClose={() => {
-            setSelected(null);
+            onCloseDrawer();
           }}
           className={classes.drawer}
-          style={{ width: 200 }}
         >
-          <Grid container xs={12}>
-            <div style={{ width: "500px" }}>
+          <Grid
+            container
+            xs={12}
+            style={{
+              borderTopLeftRadius: "20px",
+              borderTopRightRadius: "20px",
+            }}
+          >
+            <div style={mobile ? styles.mobileDrawer : { width: "500px" }}>
               <div className="details-image-wrapper">
+                <div className="details-close-span">
+                  <IconButton
+                    className={classes.iconCloseButton}
+                    onClick={() => onCloseDrawer()}
+                  >
+                    <Close />
+                  </IconButton>
+                </div>
                 <img className="details-image" src={selected.url} />
               </div>
               <Grid container xs={12} className={classes.detailsContent}>
