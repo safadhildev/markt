@@ -43,7 +43,7 @@ const Likes = () => {
 
   const getLikesData = async () => {
     try {
-      if (userData.likes) {
+      if (userData.likes.length > 0) {
         const querySnapshot = await db
           .collection("image")
           .where(
@@ -68,7 +68,6 @@ const Likes = () => {
     }
   };
 
-  console.log("DATA :: ", data);
   const onReadUserData = (doc) => {
     console.log({ doc });
     if (doc.exists) {
@@ -88,7 +87,7 @@ const Likes = () => {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
+    // setLoading(true);
     getLikesData();
   }, [userData.likes]);
 

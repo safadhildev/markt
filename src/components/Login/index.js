@@ -83,8 +83,14 @@ const Login = ({ message, severity, setOpen }) => {
       alignItems="center"
       justify="center"
       style={{ minHeight: "100vh" }}
+      direction="column"
     >
-      <Grid container xs={5} direction="column">
+      <Grid
+        container
+        xs={5}
+        direction="column"
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
         <TextField
           variant="outlined"
           type="email"
@@ -114,7 +120,7 @@ const Login = ({ message, severity, setOpen }) => {
           disabled={!email || !password || loading}
           endIcon={
             loading && (
-              <CircularProgress style={{ color: "#FFF" }} size="smaill" />
+              <CircularProgress style={{ color: "#FFF" }} size="small" />
             )
           }
         >
@@ -127,6 +133,20 @@ const Login = ({ message, severity, setOpen }) => {
         >
           Register
         </Button>
+      </Grid>
+      <Grid item xs={5} justify="center">
+        <Grid item xs={12} style={{ marginBottom: "50px" }}>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => {
+              history.push("./template");
+            }}
+            className={classes.registerButton}
+          >
+            Template
+          </Button>
+        </Grid>
       </Grid>
     </Grid>
   );

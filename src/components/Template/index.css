@@ -1,0 +1,58 @@
+.body-content{
+    width:100%;
+    height:100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.body-content h3{
+    margin-bottom: 100px;
+}
+
+.buttonContainer{
+    width:200px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.button{
+    width: 50px; 
+    padding: 10px 20px;
+    background-color:#000;
+    color:#FFF;
+    border:none;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+
+.inputContainer{
+     width:400px;
+     display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+     margin-top: 100px;
+}
+
+.customButtonContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 50px 0;
+}
+
+/* flex will auto fill width */
+/* anggap macam ratio 3:1 */
+.inputText {
+    flex:3; 
+    padding: 10px 20px;
+
+}
+.buttonSubmit{
+    flex:1;
+    margin: 0 10px;
+}
+

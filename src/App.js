@@ -17,6 +17,7 @@ import "firebase/auth";
 import Register from "./components/Register";
 import Likes from "./components/Likes";
 import MySnackbar from "./components/common/MySnackbar";
+import Template from "./components/Template";
 
 const App = () => {
   const [isAuth, setIsAuth] = useState(false);
@@ -51,12 +52,15 @@ const App = () => {
             />
           )}
         </Route>
-        <Route exact path="/Register">
+        <Route exact path="/register">
           <Register
             setOpen={setOpen}
             severity={setSeverity}
             message={setMessage}
           />
+        </Route>
+        <Route exact path="/template">
+          <Template />
         </Route>
         <Route exact path="/home">
           {isAuth ? <Home /> : <Redirect to="/" />}
