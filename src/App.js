@@ -18,6 +18,7 @@ import Register from "./components/Register";
 import Likes from "./components/Likes";
 import MySnackbar from "./components/common/MySnackbar";
 import Template from "./components/Template";
+import Sell from "./components/Sell";
 
 const App = () => {
   const [isAuth, setIsAuth] = useState(false);
@@ -79,6 +80,13 @@ const App = () => {
         <Route exact path="/likes">
           {isAuth ? <Likes /> : <Redirect to="/" />}
         </Route>
+        <Route exact path="/sell">
+          {isAuth ? <Sell
+              setOpen={setOpen}
+              severity={setSeverity}
+              message={setMessage} 
+        /> : <Redirect to="/" />}
+        </Route>
       </Switch>
       <MySnackbar
         severity={severity}
@@ -93,3 +101,4 @@ const App = () => {
 };
 
 export default App;
+
