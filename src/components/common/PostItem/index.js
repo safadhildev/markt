@@ -76,7 +76,7 @@ const PostItem = ({ data, onFavorite, liked }) => {
             onSelectItem();
           }}
         >
-          <img src={data.url} />
+          <img src={data.image} />
         </div>
         <div className="post-content-wrapper">
           <div
@@ -143,7 +143,7 @@ const PostItem = ({ data, onFavorite, liked }) => {
                     <Close />
                   </IconButton>
                 </div>
-                <img className="details-image" src={selected.url} />
+                <img className="details-image" src={selected.image} />
               </div>
               <Grid container xs={12} className={classes.detailsContent}>
                 <Grid container xs={12} direction="row" justify="space-between">
@@ -188,7 +188,7 @@ const PostItem = ({ data, onFavorite, liked }) => {
                 </Grid>
                 <Grid item xs={12} className={classes.detailsText}>
                   <p className="details-brand">
-                    Contact: <strong>{selected.contact}</strong>
+                    Contact: <strong>{selected.phone}</strong>
                   </p>
                 </Grid>
                 <Grid item xs={12} className={classes.detailsText}>

@@ -46,7 +46,7 @@ const Likes = () => {
     try {
       if (userData.likes.length > 0) {
         const querySnapshot = await db
-          .collection("image")
+          .collection("post")
           .where(
             firebase.firestore.FieldPath.documentId(),
             "in",

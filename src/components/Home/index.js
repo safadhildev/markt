@@ -95,7 +95,7 @@ const Home = () => {
 
   const getData = async () => {
     try {
-      const querySnapshot = await db.collection("image").get();
+      const querySnapshot = await db.collection("post").get();
       const results = querySnapshot.docs.map((doc) => {
         const formatData = {
           id: doc.id,
