@@ -62,7 +62,7 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const navigationList = ["home", "profile", "saved", "logout"];
+const navigationList = ["home", "profile", "saved", "category", "logout"];
 
 const Navbar = ({ search, onSearch, onChangeText, searchText }) => {
   const classes = useStyle();
@@ -147,6 +147,13 @@ const Navbar = ({ search, onSearch, onChangeText, searchText }) => {
                   className={classes.link}
                 >
                   Sell
+                </Link>
+                <Link
+                  onClick={() => onNavigate("category")}
+                  color="#FFF"
+                  className={classes.link}
+                >
+                  Category
                 </Link>
               </Grid>
               {search && (

@@ -14,13 +14,19 @@ import {
 import Navbar from "../common/Navbar";
 import './index.css'
 import placeholder from "../../assets/profile-placeholder.png";
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
+// new
+import PostItem from "../common/PostItem";
+// end new
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 const useStyle = makeStyles((theme) => ({
   root: {
-    margin: "80px 0",
+    margin: "120px 0",
   },
-  
+
   input: { margin: "20px 0" },
   title: {
     fontWeight: "bold",
@@ -40,8 +46,11 @@ const useStyle = makeStyles((theme) => ({
     borderRadius: "5px",
     boxShadow:
       "0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20)",
+    '&:hover': {
+      backgroundColor: "#0D47A1"
+    },
   },
-  
+
   deleteImgButton: {
     width: "200px",
     color: "#FFF",
@@ -53,19 +62,21 @@ const useStyle = makeStyles((theme) => ({
 }));
 
 
-const Sell = ({setOpen,severity,message})=>{
-    const currentUser = firebase.auth().currentUser;
-    const history = useHistory();
-    const classes = useStyle();
-    const db = firebase.firestore();
-    const storageRef = firebase.storage().ref();
-    const [tempImg, setTempImg] = useState(null);
-    const [createPostData, setCreatePostData]= useState({name:'',phone:'',brand:'',price:'',condition:'',category:'',description:''});
 
-    const uploadWithImage = async () => {
-    
+const Sell = ({ setOpen, severity, message }) => {
+  const currentUser = firebase.auth().currentUser;
+  const history = useHistory();
+  const classes = useStyle();
+  const db = firebase.firestore();
+  const storageRef = firebase.storage().ref();
+  const [tempImg, setTempImg] = useState(null);
+  const [createPostData, setCreatePostData] = useState({ name: '', phone: '', brand: '', price: '', condition: '', category: '', description: '' });
+
+
+  const uploadWithImage = async () => {
+
     try {
-         const key = Math.round(+new Date() / 1000);
+      const key = Math.round(+new Date() / 1000);
       await storageRef
         .child(`post/${key}/${tempImg.file.name}`)
         .put(tempImg.file);
@@ -77,14 +88,14 @@ const Sell = ({setOpen,severity,message})=>{
         .doc(key.toString())
         .set({
           ...createPostData,
-          email:currentUser.email,
+          email: currentUser.email,
 
           image: downloadUrl,
         });
       setOpen(true);
       severity("success");
       message("Update Successful!");
-      history.replace('/home');
+      getPostData();
     } catch (error) {
       setOpen(true);
       severity("error");
@@ -93,25 +104,51 @@ const Sell = ({setOpen,severity,message})=>{
     }
   };
 
-    const onValidate=()=>{
-        const{
-            name,brand,price,condition,category,phone,description
-        }=createPostData
-        if(
-            tempImg===null || name==='' || brand==='' || price=== '' || condition=== '' || category=== '' || phone==='' || description===''
-        )
-        {
-            alert('field cannot be empty') 
-        }else{
-            uploadWithImage()
-        }
+  // function to get the post data into their sell page
+  const [postData, setPostData] = useState([]);
+  const getPostData = async () => {
+    try {
+      const querySnapshot = await db.collection("post").get();
+
+      const results = querySnapshot.docs.map((doc) => {
+        const formatData = {
+          id: doc.id,
+          ...doc.data(),
+        };
+        return formatData;
+      });
+      const posts = results.filter((item) => item.email === currentUser.email);
+
+      setPostData(posts);
+    } catch (error) {
+      console.log("getPostData ::", error);
     }
+  };
+
+  useEffect(() => {
+    getPostData();
+  }, []);
 
 
-    const onDeleteImage = () => {
+  // function to add item into listing sell
+  const onValidate = () => {
+    const {
+      name, brand, price, condition, category, phone, description
+    } = createPostData
+    if (
+      tempImg === null || name === '' || brand === '' || price === '' || condition === '' || category === '' || phone === '' || description === ''
+    ) {
+      alert('field cannot be empty')
+    } else {
+      uploadWithImage()
+    }
+  }
+
+
+  const onDeleteImage = () => {
     if (tempImg) {
       setTempImg(null);
-    } 
+    }
   };
 
   const onChangeText = (value, type) => {
@@ -132,24 +169,46 @@ const Sell = ({setOpen,severity,message})=>{
       reader.readAsDataURL(input.target.files[0]);
     }
   };
+
+  const handleChange = (event) => {
+    const name = event.target.value;
+    setCreatePostData({ ...createPostData, condition: name })
+  };
+
+  const handleChangeCategory = (event) => {
+    const name = event.target.value;
+    setCreatePostData({ ...createPostData, category: name })
+  };
+
+  const renderItem = (item) => {
+
     return (
+      <PostItem
+        data={item}
+      />
+    );
+  };
+
+  return (
     <Grid
       container
       xs={12}
       className={classes.root}
       direction="row"
-      justify="center"
-      alignItems="center"
+      justify-content="flex-start"
+      alignItems="flex-start"
+      display="flex"
+
     >
       <Navbar />
       <Grid
         container
-        xs={12}
-        justify="center"
+        xs={4}
+        justify-content="center"
         spacing={4}
         className={classes.body}
       >
-        <Grid container xs={12} md={5} justify="center">
+        <Grid container xs={12} justify="center">
           <Typography className={classes.title}>Selling</Typography>
 
           <Grid container xs={12} justify="center">
@@ -157,14 +216,16 @@ const Sell = ({setOpen,severity,message})=>{
               <img
                 id="img"
                 src={
-                  tempImg?.path ?? placeholder 
+                  tempImg?.path ?? placeholder
                 }
                 alt={placeholder}
               />
             </div>
           </Grid>
+
+          {/* button add image */}
           <Grid container xs={10}>
-            <Grid container xs={12} sm={6} justify="center">
+            <Grid container xs={12} justify="center">
               <label for="imgSelect" class={classes.updateImgButton}>
                 Select Image
               </label>
@@ -179,7 +240,9 @@ const Sell = ({setOpen,severity,message})=>{
                 }}
               />
             </Grid>
-            <Grid container xs={12} sm={6} justify="center">
+
+            {/* button delete */}
+            <Grid container xs={12} justify="center">
               <Button
                 variant="contained"
                 size="large"
@@ -191,6 +254,8 @@ const Sell = ({setOpen,severity,message})=>{
               </Button>
             </Grid>
           </Grid>
+
+          {/* name container */}
           <Grid item xs={10}>
             <TextField
               fullWidth
@@ -201,9 +266,10 @@ const Sell = ({setOpen,severity,message})=>{
               onChange={(event) =>
                 onChangeText(event.target.value, "name")
               }
-              
             />
           </Grid>
+
+              {/* brand container */}
           <Grid item xs={10}>
             <TextField
               fullWidth
@@ -216,36 +282,58 @@ const Sell = ({setOpen,severity,message})=>{
               }
             />
           </Grid>
+
+              {/* enter amount container */}
           <Grid item xs={10}>
             <TextField
               fullWidth
               className={classes.input}
               variant="outlined"
               value={createPostData.price}
-              label="Price (RM)"
+              label="Enter Amount (RM)"
               onChange={(event) => onChangeText(event.target.value, "price")}
             />
           </Grid>
-          <Grid item xs={10}>
-            <TextField
-              fullWidth
-              className={classes.input}
-              variant="outlined"
-              value={createPostData.condition}
-              label="Condition (New/Used)"
-              onChange={(event) => onChangeText(event.target.value, "condition")}
-            />
+
+          {/* condition container */}
+          <Grid item xs={10} style={{margin:'10px 0'}}>
+            <FormControl variant="outlined" className={classes.formControl}>
+              <InputLabel htmlFor="outlined-age-native-simple">Condition Used/New</InputLabel>
+              <Select style={{ width: 400 }}
+                native
+                value={createPostData.condition}
+                onChange={handleChange}
+                label="Condition Used/New"
+
+              >
+                <option aria-label="None" value="" />
+                <option value="Used">Used</option>
+                <option value="New">New</option>
+
+              </Select>
+            </FormControl>
           </Grid>
-          <Grid item xs={10}>
-            <TextField
-              fullWidth
-              className={classes.input}
-              variant="outlined"
-              value={createPostData.category}
-              label="Category Fashion/Mobile"
-              onChange={(event) => onChangeText(event.target.value, "category")}
-            />
+
+              {/* category container */}
+          <Grid item xs={10} style={{ margin: '10px 0' }}>
+            <FormControl variant="outlined" className={classes.formControl}>
+              <InputLabel htmlFor="outlined-age-native-simple">Fashion / Mobile</InputLabel>
+              <Select style={{ width: 400 }}
+                native
+                value={createPostData.category}
+                onChange={handleChangeCategory}
+                label="Fashion / Mobile"
+
+              >
+                <option aria-label="None" value="" />
+                <option value="Fashion">Fashion</option>
+                <option value="Mobile">Mobile</option>
+
+              </Select>
+            </FormControl>
           </Grid>
+
+              {/* phone number container */}
           <Grid item xs={10}>
             <TextField
               fullWidth
@@ -256,6 +344,8 @@ const Sell = ({setOpen,severity,message})=>{
               onChange={(event) => onChangeText(event.target.value, "phone")}
             />
           </Grid>
+
+              {/* description container */}
           <Grid item xs={10}>
             <TextField
               fullWidth
@@ -266,6 +356,8 @@ const Sell = ({setOpen,severity,message})=>{
               onChange={(event) => onChangeText(event.target.value, "description")}
             />
           </Grid>
+
+              {/* submit container output */}
           <Grid item xs={10} style={{ marginTop: "50px" }}>
             <Button
               variant="contained"
@@ -281,10 +373,34 @@ const Sell = ({setOpen,severity,message})=>{
           </Grid>
         </Grid>
       </Grid>
+
+      {/* display sell box righ side */}
+      <Grid
+        container
+        xs={8}
+        justify="flex-start"
+        alignItems="space-evenly"
+      >
+        {postData.length > 0 && postData.map(renderItem)}
+
+        <Button
+        variant="contained"
+        size="large"
+        classes={{ root: classes.deleteImgButton, focusVisible: false }}
+        onClick={() => onDeleteImage()}
+        disableRipple
+              >
+        {tempImg ? "Remove" : "Delete"} Image
+              </Button>
+
+
+      </Grid>
     </Grid>
-    )
-    
+
+
+  )
+
 }
 
-export default Sell 
+export default Sell;
 

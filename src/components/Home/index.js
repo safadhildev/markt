@@ -77,6 +77,13 @@ const useStyle = makeStyles((theme) => ({
   loggedText: {
     fontSize: "12px",
   },
+
+  input: { margin: "20px 0" },
+  title: {
+    fontWeight: "bold",
+    fontSize: "24px",
+    margin: "30px 0",
+  },
 }));
 
 const Home = () => {
@@ -191,7 +198,7 @@ const Home = () => {
         xs={12}
         direction="column"
         alignItems="center"
-        // justify="center"
+        justify="center"
         style={{ minHeight: "100vh" }}
       >
         <CircularProgress />
@@ -209,9 +216,9 @@ const Home = () => {
         onFavorite={() => {
           onFavorite(item);
         }}
-        // onClick={() => {
-        //   onSelectItem(item);
-        // }}
+      // onClick={() => {
+      //   onSelectItem(item);
+      // }}
       />
     );
   };
