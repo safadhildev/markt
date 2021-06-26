@@ -6,7 +6,13 @@ import {
   SwipeableDrawer,
   useMediaQuery,
 } from "@material-ui/core";
-import { Close, Favorite, FavoriteBorder } from "@material-ui/icons";
+import {
+  Close,
+  Delete,
+  Edit,
+  Favorite,
+  FavoriteBorder,
+} from "@material-ui/icons";
 import React, { useState } from "react";
 import "./index.css";
 
@@ -36,6 +42,11 @@ const useStyle = makeStyles((theme) => ({
     alignItems: "flex-end",
     color: "#f44336",
   },
+  iconEditButton: {
+    padding: 0,
+    alignItems: "flex-end",
+    color: "#4CAF50",
+  },
   iconCloseButton: {
     padding: 0,
     alignItems: "flex-end",
@@ -54,7 +65,15 @@ const useStyle = makeStyles((theme) => ({
   },
 }));
 
-const PostItem = ({ data, onFavorite, liked }) => {
+const PostItem = ({
+  data,
+  onFavorite,
+  liked,
+  hasDelete,
+  onDelete,
+  hasEdit,
+  onEdit,
+}) => {
   const classes = useStyle();
   const [selected, setSelected] = useState(null);
   const mobile = useMediaQuery("(max-width:500px)");
@@ -102,15 +121,26 @@ const PostItem = ({ data, onFavorite, liked }) => {
             </p>
           </div>
           <div className="post-content-fav">
-            <IconButton
-              className={classes.iconButton}
-              onClick={() => {
-                onFavorite();
-                setSelected(null);
-              }}
-            >
-              {liked ? <Favorite /> : <FavoriteBorder />}
-            </IconButton>
+            {hasEdit && (
+              <IconButton className={classes.iconEditButton} onClick={onEdit}>
+                <Edit />
+              </IconButton>
+            )}
+            {hasDelete ? (
+              <IconButton className={classes.iconButton} onClick={onDelete}>
+                <Delete />
+              </IconButton>
+            ) : (
+              <IconButton
+                className={classes.iconButton}
+                onClick={() => {
+                  onFavorite();
+                  setSelected(null);
+                }}
+              >
+                {liked ? <Favorite /> : <FavoriteBorder />}
+              </IconButton>
+            )}
           </div>
         </div>
       </div>
