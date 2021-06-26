@@ -48,7 +48,7 @@ const useStyle = makeStyles((theme) => ({
     textDecoration: "none",
     borderRadius: "5px",
   },
-  linkSignout: { fontWeight: "bold", cursor: "pointer", marginLeft: 10 },
+  linkSignOut: { fontWeight: "bold", cursor: "pointer", marginLeft: 10 },
   linkWrapper: {
     display: "flex",
     alignItems: "center",
@@ -210,7 +210,7 @@ const Navbar = ({ search, onSearch, onChangeText, searchText }) => {
                 <Link
                   onClick={() => onLogout()}
                   color="#FFF"
-                  className={classes.linkSignout}
+                  className={classes.linkSignOut}
                 >
                   Logout
                 </Link>
