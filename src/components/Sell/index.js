@@ -68,6 +68,9 @@ const useStyle = makeStyles((theme) => ({
     padding: "13px 0",
     borderRadius: "5px",
   },
+  searchInput: {
+    width: "400px",
+  },
 }));
 
 const Sell = ({ setOpen, severity, message }) => {
@@ -77,6 +80,8 @@ const Sell = ({ setOpen, severity, message }) => {
   const classes = useStyle();
   const db = firebase.firestore();
   const storageRef = firebase.storage().ref();
+  const [searchValue, setSearchValue] = useState(null);
+  const [filterData, setFilterData] = useState([]);
 
   // function to get the post data into their sell page
   const [postData, setPostData] = useState([]);
@@ -125,9 +130,28 @@ const Sell = ({ setOpen, severity, message }) => {
     }
   };
 
+  const onFilterDataBySearch = () => {
+    const filter = postData.filter((item) =>
+      item.name.toLowerCase().includes(searchValue)
+    );
+    setFilterData(filter);
+  };
+
+  const onChangeText = (text) => {
+    setSearchValue(text);
+  };
+
   const onAddPost = () => {
     history.push("/post");
   };
+
+  useEffect(() => {
+    if (searchValue && searchValue !== "") {
+      onFilterDataBySearch();
+    } else {
+      setFilterData([]);
+    }
+  }, [searchValue]);
 
   const renderItem = (item) => {
     return (
@@ -177,9 +201,18 @@ const Sell = ({ setOpen, severity, message }) => {
           <CircularProgress />
         </Grid>
       )}
-      <Grid item container xs={12}>
-        <Grid xs={12} md={8}></Grid>
-        <Grid xs={12} md={4}>
+      <Grid item container xs={12} justify="space-between" alignItems="center">
+        <Grid xs={12} md={8} style={{ padding: "0 20px" }}>
+          <TextField
+            variant="outlined"
+            value={searchValue}
+            label="Search"
+            size="small"
+            onChange={(event) => onChangeText(event.target.value)}
+            className={classes.searchInput}
+          />
+        </Grid>
+        <Grid xs={12} md={2}>
           <Button
             variant="contained"
             onClick={() => {
@@ -191,8 +224,10 @@ const Sell = ({ setOpen, severity, message }) => {
         </Grid>
       </Grid>
 
-      <Grid container xs={8} justify="flex-start" alignItems="space-evenly">
-        {postData.length > 0 && postData.map(renderItem)}
+      <Grid container xs={12} justify="flex-start" alignItems="space-evenly">
+        {searchValue
+          ? filterData.map(renderItem)
+          : postData.length > 0 && postData.map(renderItem)}
       </Grid>
     </Grid>
   );
