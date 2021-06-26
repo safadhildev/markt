@@ -20,6 +20,7 @@ import MySnackbar from "./components/common/MySnackbar";
 import Template from "./components/Template";
 import Sell from "./components/Sell";
 import UploadPost from "./components/Sell/UploadPost";
+import ProfileEdit from "./components/ProfileEdit";
 
 const App = () => {
   const [isAuth, setIsAuth] = useState(false);
@@ -79,10 +80,21 @@ const App = () => {
             <Redirect to="/" />
           )}
         </Route>
+        <Route exact path="/profile/edit">
+          {isAuth ? (
+            <ProfileEdit
+              setOpen={setOpen}
+              severity={setSeverity}
+              message={setMessage}
+            />
+          ) : (
+            <Redirect to="/" />
+          )}
+        </Route>
         <Route exact path="/likes">
           {isAuth ? <Likes /> : <Redirect to="/" />}
         </Route>
-        <Route exact path="/sell">
+        {/* <Route exact path="/sell">
           {isAuth ? (
             <Sell
               setOpen={setOpen}
@@ -92,8 +104,8 @@ const App = () => {
           ) : (
             <Redirect to="/" />
           )}
-        </Route>
-        <Route exact path="/post">
+        </Route> */}
+        <Route exact path="/sell">
           {isAuth ? (
             <UploadPost
               setOpen={setOpen}

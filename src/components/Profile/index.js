@@ -13,7 +13,9 @@ import "./index.css";
 import firebase from "firebase/app";
 import "firebase/firestore";
 import placeholder from "../../assets/profile-placeholder.png";
-import { Close } from "@material-ui/icons";
+import { AccountCircleRounded, Close, Email, Phone } from "@material-ui/icons";
+import { useHistory } from "react-router-dom";
+import PostItem from "../common/PostItem";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -22,6 +24,15 @@ const useStyle = makeStyles((theme) => ({
   body: {
     margin: "0px 0",
   },
+  line: {
+    height: "100%",
+    width: "1px",
+    backgroundColor: "#000",
+    [theme.breakpoints.down("md")]: {
+      height: "1px",
+      width: "100%",
+    },
+  },
   img: {
     height: 255,
     display: "block",
@@ -29,11 +40,22 @@ const useStyle = makeStyles((theme) => ({
     overflow: "hidden",
     width: "100%",
   },
-  input: { margin: "20px 0" },
+  textWrapper: { display: "flex", margin: "10px 0" },
+  text: {
+    margin: "0 10px",
+  },
   title: {
     fontWeight: "bold",
     fontSize: "24px",
-    margin: "30px 0",
+    margin: "20px 60px 50px 60px",
+  },
+  imageWrapper: {
+    width: "120px",
+    height: "120px",
+    overflow: "hidden",
+    margin: "0 0 20px 0",
+    borderRadius: "50%",
+    border: "1px solid #000",
   },
   updateImgButton: {
     width: "200px",
@@ -59,12 +81,43 @@ const useStyle = makeStyles((theme) => ({
 
 const Profile = ({ setOpen, severity, message }) => {
   const currentUser = firebase.auth().currentUser;
+  const history = useHistory();
   const classes = useStyle();
   const db = firebase.firestore();
   const storageRef = firebase.storage().ref();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [tempImg, setTempImg] = useState(null);
+  const [searchValue, setSearchValue] = useState(null);
+  const [filterData, setFilterData] = useState([]);
+  const [postData, setPostData] = useState([]);
+
+  const getPostData = async () => {
+    try {
+      const querySnapshot = await db.collection("post").get();
+
+      const results = querySnapshot.docs.map((doc) => {
+        const formatData = {
+          id: doc.id,
+          ...doc.data(),
+        };
+        return formatData;
+      });
+      const posts = results.filter((item) => item.email === currentUser.email);
+      setPostData(posts);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      console.log("getPostData ::", error);
+    }
+  };
+
+  const onFilterDataBySearch = () => {
+    const filter = postData.filter((item) =>
+      item.name.toLowerCase().includes(searchValue)
+    );
+    setFilterData(filter);
+  };
 
   const getUserData = (doc) => {
     try {
@@ -87,215 +140,212 @@ const Profile = ({ setOpen, severity, message }) => {
     return unsubscribe;
   }, []);
 
-  const uploadWithImage = async () => {
-    try {
-      await storageRef
-        .child(`users/${currentUser.uid}/${tempImg.file.name}`)
-        .put(tempImg.file);
-      const downloadUrl = await storageRef
-        .child(`users/${currentUser.uid}/${tempImg.file.name}`)
-        .getDownloadURL();
-      await db
-        .collection("users")
-        .doc(currentUser.uid)
-        .update({
-          ...userData,
-          image: downloadUrl,
-        });
-      setOpen(true);
-      severity("success");
-      message("Update Successful!");
-    } catch (error) {
-      setOpen(true);
-      severity("error");
-      message(error.message);
-      console.log("Error :: ", error);
-    }
+  useEffect(() => {
+    getPostData();
+  }, []);
+
+  const onChangeText = (value) => {
+    setSearchValue(value);
   };
 
-  console.log(currentUser.uid);
-
-  const uploadWithoutImage = async () => {
-    try {
-      await db
-        .collection("users")
-        .doc(currentUser.uid)
-        .update({
-          ...userData,
-        });
-      setOpen(true);
-      severity("success");
-      message("Update Successful!");
-    } catch (error) {
-      setOpen(true);
-      severity("error");
-      message(error.message);
-      console.log("Error :: ", error);
-    }
+  const onEditProfile = () => {
+    history.push("/profile/edit");
   };
-  const onUpdateUser = async () => {
-    if (tempImg) {
-      uploadWithImage();
+  const onAddPost = () => {
+    history.push("/sell");
+  };
+
+  useEffect(() => {
+    if (searchValue && searchValue !== "") {
+      onFilterDataBySearch();
     } else {
-      uploadWithoutImage();
+      setFilterData([]);
+    }
+  }, [searchValue]);
+
+  const onDeletePost = async (item) => {
+    try {
+      setLoading(true);
+      // 1) delete image from firebase storage
+      await firebase.storage().refFromURL(item.image).delete();
+      // 2) delete data from firestore database
+      await db.collection("post").doc(item.id).delete();
+      setOpen(true);
+      severity("success");
+      message("Successfully delete sell post");
+      getPostData();
+    } catch (error) {
+      setLoading(false);
+      setOpen(true);
+      severity("error");
+      message(error.message);
+      console.log("onDeletePost :: ", error);
     }
   };
 
-  const onDeleteImage = () => {
-    if (tempImg) {
-      setTempImg(null);
-    } else if (userData.image) {
-      // delete image from storage
-    }
-  };
-
-  const onChangeText = (value, type) => {
-    setUserData({
-      ...userData,
-      [type]: value,
-    });
-  };
-
-  const onChangeImage = (input) => {
-    console.log("INPUT :: ", input);
-    if (input.target.files && input.target.files[0]) {
-      console.log(input.target.files[0]);
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        setTempImg({ path: event.target.result, file: input.target.files[0] });
-      };
-      reader.readAsDataURL(input.target.files[0]);
-    }
+  const renderItem = (item) => {
+    return (
+      <PostItem
+        data={item}
+        hasDelete
+        hasEdit
+        onEdit={() => {
+          history.push(`/post/${item.id}`);
+        }}
+        onDelete={() => {
+          if (
+            window.confirm(
+              "Are you sure you want to permanently delete the selected post?"
+            )
+          ) {
+            onDeletePost(item);
+          }
+        }}
+      />
+    );
   };
 
   const renderData = () => {
     return (
       <Grid
+        item
         container
         xs={12}
-        justify="center"
-        spacing={4}
         className={classes.body}
+        justify="space-around"
       >
-        <Grid container xs={12} md={5} justify="center">
-          <Typography className={classes.title}>Profile</Typography>
-
-          <Grid container xs={12} justify="center">
-            <div className="image-wrapper">
+        {/* Render Left side */}
+        <Grid
+          container
+          xs={12}
+          md={2}
+          justify="flex-start"
+          style={{ padding: "0 20px" }}
+        >
+          <Grid item xs={12}>
+            <div className={classes.imageWrapper}>
               <img
                 id="img"
-                src={
-                  tempImg?.path ? tempImg?.path : userData?.image ?? placeholder
-                }
+                src={userData?.image ?? placeholder}
                 alt={placeholder}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </div>
           </Grid>
-          <Grid container xs={10}>
-            <Grid container xs={12} sm={6} justify="center">
-              <label for="imgSelect" class={classes.updateImgButton}>
-                Select Image
-              </label>
-              <input
-                id="imgSelect"
-                className={classes.updateImgButton}
-                type="file"
-                accept="image/png, image/jpeg"
-                hidden
-                onChange={(input) => {
-                  onChangeImage(input);
-                }}
+          <Grid item xs={12} style={{ margin: "0 0 20px 0" }}>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={() => onEditProfile()}
+              disableRipple
+            >
+              Edit Profile
+            </Button>
+          </Grid>
+          <Grid
+            item
+            xs={10}
+            justify="flex-start"
+            alignItems="center"
+            className={classes.textWrapper}
+          >
+            <AccountCircleRounded />
+            <Typography className={classes.text}>
+              {userData?.displayName}
+            </Typography>
+          </Grid>
+          <Grid
+            item
+            xs={10}
+            justify="flex-start"
+            alignItems="center"
+            className={classes.textWrapper}
+          >
+            <Email />
+            <Typography className={classes.text}>{userData?.email}</Typography>
+          </Grid>
+          <Grid
+            item
+            xs={10}
+            justify="flex-start"
+            alignItems="center"
+            className={classes.textWrapper}
+          >
+            <Phone />
+            <Typography className={classes.text}>{userData?.phone}</Typography>
+          </Grid>
+        </Grid>
+        {/* render line */}
+        <Grid>
+          <div className={classes.line}></div>
+        </Grid>
+        {/* Render Right Side */}
+        <Grid item container xs={12} md={8}>
+          <Grid
+            item
+            container
+            xs={12}
+            justify="space-between"
+            alignItems="flex-start"
+          >
+            <Grid xs={12} md={8} style={{ padding: "0 0 0 20px" }}>
+              <TextField
+                variant="outlined"
+                value={searchValue}
+                label="Search"
+                size="small"
+                onChange={(event) => onChangeText(event.target.value)}
+                className={classes.searchInput}
               />
             </Grid>
-            <Grid container xs={12} sm={6} justify="center">
+            <Grid xs={12} md={2} style={{ padding: "0 20px 0 0" }}>
               <Button
                 variant="contained"
-                size="large"
-                classes={{ root: classes.deleteImgButton, focusVisible: false }}
-                onClick={() => onDeleteImage()}
-                disableRipple
+                onClick={() => {
+                  onAddPost();
+                }}
               >
-                {tempImg ? "Remove" : "Delete"} Image
+                Add Post
               </Button>
             </Grid>
           </Grid>
-          <Grid item xs={10}>
-            <TextField
-              fullWidth
-              className={classes.input}
-              variant="outlined"
-              value={userData?.displayName}
-              label="Name"
-              onChange={(event) =>
-                onChangeText(event.target.value, "displayName")
-              }
-              InputLabelProps={{
-                shrink: userData?.displayName && true,
-              }}
-            />
-          </Grid>
-          <Grid item xs={10}>
-            <TextField
-              fullWidth
-              className={classes.input}
-              variant="outlined"
-              value={userData?.email}
-              label="Email"
-              disabled
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-          </Grid>
-          <Grid item xs={10}>
-            <TextField
-              fullWidth
-              className={classes.input}
-              variant="outlined"
-              value={userData?.phone}
-              label="Phone"
-              onChange={(event) => onChangeText(event.target.value, "phone")}
-              InputLabelProps={{
-                shrink: userData?.phone && true,
-              }}
-            />
-          </Grid>
-          <Grid item xs={10} style={{ marginTop: "50px" }}>
-            <Button
-              variant="contained"
-              fullWidth
-              size="large"
-              color="primary"
-              onClick={() => {
-                onUpdateUser();
-              }}
-            >
-              Update
-            </Button>
+
+          <Grid
+            container
+            xs={12}
+            justify="flex-start"
+            alignItems="space-evenly"
+          >
+            {searchValue
+              ? filterData.map(renderItem)
+              : postData.length > 0 && postData.map(renderItem)}
           </Grid>
         </Grid>
       </Grid>
     );
   };
 
-  const renderLoading = () => {
-    return (
-      <Grid container xs={12} justify="center" className={classes.body}>
-        <CircularProgress />
-      </Grid>
-    );
-  };
   return (
-    <Grid
-      container
-      xs={12}
-      className={classes.root}
-      direction="row"
-      justify="center"
-      alignItems="center"
-    >
+    <Grid container xs={12} className={classes.root}>
       <Navbar />
-      {loading ? renderLoading() : renderData()}
+      <Typography className={classes.title}>Profile</Typography>
+      {loading && (
+        <Grid
+          container
+          xs={12}
+          justify="center"
+          style={{
+            position: "fixed",
+            zIndex: 10,
+            width: "100%",
+            height: "100vh",
+            backgroundColor: "rgba(255,255,255,0.7)",
+          }}
+        >
+          <CircularProgress />
+        </Grid>
+      )}
+      {renderData()}
     </Grid>
   );
 };

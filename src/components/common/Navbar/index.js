@@ -29,6 +29,7 @@ import { useState } from "react";
 import { useHistory } from "react-router";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 import firebase from "firebase/app";
+import { NavLink } from "react-router-dom";
 
 const useStyle = makeStyles((theme) => ({
   root: {
@@ -41,7 +42,11 @@ const useStyle = makeStyles((theme) => ({
   link: {
     fontWeight: "bold",
     cursor: "pointer",
-    marginRight: 30,
+    margin: "0 10px 0 0",
+    padding: "5px 10px",
+    color: "#FFF",
+    textDecoration: "none",
+    borderRadius: "5px",
   },
   linkSignout: { fontWeight: "bold", cursor: "pointer", marginLeft: 10 },
   linkWrapper: {
@@ -120,41 +125,66 @@ const Navbar = ({ search, onSearch, onChangeText, searchText }) => {
           {!mobile && (
             <>
               <Grid item xs={search ? 7 : 9} className={classes.linkWrapper}>
-                <Link
-                  onClick={() => onNavigate("home")}
-                  color="#FFF"
+                <NavLink
+                  // onClick={() => onNavigate("home")}
                   className={classes.link}
+                  activeStyle={{
+                    backgroundColor: "#FFF",
+                    color: "#000",
+                    textDecoration: "none",
+                  }}
+                  to="/home"
                 >
                   Home
-                </Link>
-                <Link
-                  onClick={() => onNavigate("profile")}
-                  color="#FFF"
+                </NavLink>
+                <NavLink
+                  // onClick={() => onNavigate("home")}
                   className={classes.link}
+                  activeStyle={{
+                    backgroundColor: "#FFF",
+                    color: "#000",
+                    textDecoration: "none",
+                  }}
+                  to="/profile"
                 >
                   Profile
-                </Link>
-                <Link
-                  onClick={() => onNavigate("likes")}
-                  color="#FFF"
+                </NavLink>
+                <NavLink
+                  // onClick={() => onNavigate("home")}
                   className={classes.link}
+                  activeStyle={{
+                    backgroundColor: "#FFF",
+                    color: "#000",
+                    textDecoration: "none",
+                  }}
+                  to="/likes"
                 >
                   Favorites
-                </Link>
-                <Link
-                  onClick={() => onNavigate("sell")}
-                  color="#FFF"
+                </NavLink>
+                <NavLink
+                  // onClick={() => onNavigate("home")}
                   className={classes.link}
+                  activeStyle={{
+                    backgroundColor: "#FFF",
+                    color: "#000",
+                    textDecoration: "none",
+                  }}
+                  to="/sell"
                 >
                   Sell
-                </Link>
-                <Link
-                  onClick={() => onNavigate("category")}
-                  color="#FFF"
+                </NavLink>
+                <NavLink
+                  // onClick={() => onNavigate("home")}
                   className={classes.link}
+                  activeStyle={{
+                    backgroundColor: "#FFF",
+                    color: "#000",
+                    textDecoration: "none",
+                  }}
+                  to="/category"
                 >
                   Category
-                </Link>
+                </NavLink>
               </Grid>
               {search && (
                 <Grid item xs={2}>
