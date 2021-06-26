@@ -19,6 +19,7 @@ import Likes from "./components/Likes";
 import MySnackbar from "./components/common/MySnackbar";
 import Template from "./components/Template";
 import Sell from "./components/Sell";
+import UploadPost from "./components/Sell/UploadPost";
 
 const App = () => {
   const [isAuth, setIsAuth] = useState(false);
@@ -26,18 +27,19 @@ const App = () => {
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
 
-  useEffect(
-    () =>
-      firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-          console.log({ user });
-          setIsAuth(true);
-        } else {
-          setIsAuth(false);
-        }
-      }),
-    [setIsAuth]
-  );
+  const handleAuthChanged = (user) => {
+    if (user) {
+      console.log({ user });
+      setIsAuth(true);
+    } else {
+      setIsAuth(false);
+    }
+  };
+
+  useEffect(() => {
+    firebase.auth().onAuthStateChanged(handleAuthChanged);
+    return () => firebase.auth().onAuthStateChanged(handleAuthChanged);
+  }, []);
 
   return (
     <Router>
@@ -81,11 +83,37 @@ const App = () => {
           {isAuth ? <Likes /> : <Redirect to="/" />}
         </Route>
         <Route exact path="/sell">
-          {isAuth ? <Sell
+          {isAuth ? (
+            <Sell
               setOpen={setOpen}
               severity={setSeverity}
-              message={setMessage} 
-        /> : <Redirect to="/" />}
+              message={setMessage}
+            />
+          ) : (
+            <Redirect to="/" />
+          )}
+        </Route>
+        <Route exact path="/post">
+          {isAuth ? (
+            <UploadPost
+              setOpen={setOpen}
+              severity={setSeverity}
+              message={setMessage}
+            />
+          ) : (
+            <Redirect to="/" />
+          )}
+        </Route>
+        <Route exact path="/post/:id">
+          {isAuth ? (
+            <UploadPost
+              setOpen={setOpen}
+              severity={setSeverity}
+              message={setMessage}
+            />
+          ) : (
+            <Redirect to="/" />
+          )}
         </Route>
       </Switch>
       <MySnackbar
@@ -101,4 +129,3 @@ const App = () => {
 };
 
 export default App;
-
